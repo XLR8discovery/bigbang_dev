@@ -1,0 +1,26 @@
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: earthly --ci +test
+      - name: Lint
+        run: earthly --ci +lint
+      - name: Cleanup used space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          docker-images: false
+      - name: Integration
+        run: earthly -P --ci +integration-all
